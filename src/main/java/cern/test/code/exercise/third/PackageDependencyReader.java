@@ -20,25 +20,40 @@ import cern.test.code.exercise.third.exception.UnprocessableFileNameException;
 import cern.test.code.exercise.third.model.Pkg;
 import cern.test.code.exercise.third.utils.FileReader;
 
+/**
+ * Core class that returns the dependency hierarchy from the specified filePath.
+ * 
+ * @author Emanuele Venzano
+ * @version 1.0
+ * @since 2025-01-07
+ */
 public class PackageDependencyReader {
 	private final FileReader fileReader;
 	private final ObjectMapper objectMapper;
 	private final Comparator<Pkg> pkgComparator = Comparator.comparing(Pkg::getName);
 
 	
+	/**
+     * Constructor that allows to inject FileReader.
+     *
+     * @param fileReader that converts filePath into File
+     */
 	public PackageDependencyReader(final FileReader fileReader) {
 		this.objectMapper = new ObjectMapper();
 		this.fileReader = fileReader;
 	}
 	
 	/**
-     * Reads a JSON file containing package dependencies and returns it as a Map.
+     * Reads a JSON file containing package dependencies and returns it as a set of tree hierarchies.
      *
      * @param filePath the path to the JSON file
-     * @return a map where the key is the package name and the value is the list of dependencies
-     * @throws IOException if the file cannot be read or the content is invalid
+     * @return a set of all the packages present in the file. For each of them, name and all dependencies are present
+     * @throws UnprocessableFileNameException if the file is null or empty
+     * @throws DeserializationFailedException if the file cannot be correctly deserialized as json
+     * @throws FileNotFoundException if the file cannot be found in the file system
+     * @throws IOException if other input-output exception occurs
      */
-    public Set<Pkg> readPackageDependencies(String filePath) throws UnprocessableFileNameException, DeserializationFailedException, IOException {
+    public Set<Pkg> readPackageDependencies(String filePath) throws UnprocessableFileNameException, DeserializationFailedException, FileNotFoundException, IOException {
     	if (filePath == null || filePath.isEmpty())
     		throw new UnprocessableFileNameException();
 

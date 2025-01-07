@@ -37,6 +37,13 @@ import cern.test.code.exercise.third.exception.UnprocessableFileNameException;
 import cern.test.code.exercise.third.model.Pkg;
 import cern.test.code.exercise.third.utils.FileReader;
 
+/**
+ * Test class to verify all meaningful scenarios.
+ * 
+ * @author Emanuele Venzano
+ * @version 1.0
+ * @since 2025-01-07
+ */
 @ExtendWith(MockitoExtension.class) 
 public class PackageDependencyReaderTest {
 
@@ -46,11 +53,19 @@ public class PackageDependencyReaderTest {
     @InjectMocks
     private PackageDependencyReader packageDependencyReader; 
     
+	/**
+     * Assert FileNotFoundException is thrown when file cannot be found in the filesystem.
+     * 
+     */
     @Test
     void notExistingFile_shouldThrowException() {
-        assertThrows(FileNotFoundException.class, () -> packageDependencyReader.readPackageDependencies("C:\\Users\\emanu\\Documents\\Projects\\Code\\assistant\\iot-manager\\infrastructure\\file.txt"));
+        assertThrows(FileNotFoundException.class, () -> packageDependencyReader.readPackageDependencies("C:\\Users\\user\\Documents\\files\\file.txt"));
     }
     
+	/**
+     * Assert DeserializationFailedException is thrown when file is found but is not a json.
+     * 
+     */
     @Test
     void notDesiarilizable_shouldThrowException() throws IOException {
 		when(fileReaderMock.readFileFromFileSystem(anyString())).thenReturn(readFileFromFileSystem("NotDeserializable.txt"));
@@ -58,13 +73,21 @@ public class PackageDependencyReaderTest {
     	
     }
     
+	/**
+     * Assert UnprocessableFileNameException is thrown when filename is null or empty.
+     * 
+     */
     @ParameterizedTest
     @NullAndEmptySource
     void invalidFileName_shouldThrowException(String fileName) {
     	assertThrows(UnprocessableFileNameException.class, () -> packageDependencyReader.readPackageDependencies(fileName));
     }
     
-    
+	/**
+     * Assert result is given and it is valid according to the specifications when input data are valid
+     * 
+     * @param testData represent input and expected output to verify behavior on different scenarios
+     */
     @ParameterizedTest
     @MethodSource
     void testValidInputs(TestData testData) throws IOException {
@@ -76,7 +99,12 @@ public class PackageDependencyReaderTest {
         validatePkgTree(testData.getOutput(), actualResult);
         
     }
-
+    
+    /**
+     * Provides test data to testValidInputs method. Both input and expected output are specified
+     * 
+     * @return testData to verify
+     */
     private static Stream<TestData> testValidInputs() {
     	return Stream.of(
     	        new TestData(
@@ -137,6 +165,11 @@ public class PackageDependencyReaderTest {
     	);
     }
 
+    /**
+     * Assert CircularDependencyFatalException is thrown when circular dependency are present
+     * 
+     * @param testData represent input where circular dependencies are present
+     */
     @ParameterizedTest
     @MethodSource
     void testCircularDependency(String testData) throws IOException {
@@ -144,6 +177,11 @@ public class PackageDependencyReaderTest {
         assertThrows(CircularDependencyFatalException.class, () -> packageDependencyReader.readPackageDependencies("fictive"));
     }
     
+    /**
+     * Provides test data to testCircularDependency method
+     * 
+     * @return strings that represent scenarios with circular dependencies
+     */
     private static Stream<String> testCircularDependency() {
     	return Stream.of(
     	                "{\"pkg1\": [\"pkg2\"], \"pkg2\": [\"pkg1\"]}",
@@ -151,6 +189,11 @@ public class PackageDependencyReaderTest {
     	                "{\"pkg1\": [\"pkg2\"], \"pkg2\": [\"pkg3\", \"pkg4\"], \"pkg4\": [\"pkg1\"]}");
     }
 
+	/**
+     * Validate behavior with the scenario present into exercise specification. This time the file is read from src/resources 
+     * folder instead of from its path
+     * 
+     */
     @Test
     void readFileFromResourcesFolder() throws IOException {
 		when(fileReaderMock.readFileFromFileSystem(anyString())).thenReturn(readFileFromFileSystem("Dependencies.json"));
@@ -168,6 +211,12 @@ public class PackageDependencyReaderTest {
         validatePkgTree(expected, result);
     }
     
+	/**
+     * Validate dependency tree construction logic comparing expected and actual values
+     * 
+     * @param expected represents the tree hierarchy defined in the test as expected output
+     * @param actual represents the result from PackageDependencyReader elaboration
+     */
     private void validatePkgTree(Set<Pkg> expected, Set<Pkg> actual) {
     	assertEquals(expected.size(), actual.size());
     	Map<String, Pkg> expectedPkgs = expected.stream().collect(Collectors.toMap(Pkg::getName, Function.identity()));
@@ -180,6 +229,13 @@ public class PackageDependencyReaderTest {
     	
     }
     
+    /**
+     * Class that encapsulate test input and output to verify expected behavior
+     * 
+     * @author Emanuele Venzano
+     * @version 1.0
+     * @since 2025-01-07
+     */
     private static class TestData {
     	private final String input;
     	private final Set<Pkg> output;
@@ -203,6 +259,12 @@ public class PackageDependencyReaderTest {
 		}	
     }
 
+	/**
+     * Creates a file from its string content to mock reading operation and test the behavior on multiple inputs
+     * 
+     * @param content represents the content that is assumed to be written in the file
+     * @return a fictive file conaining the content
+     */
     private File createTempFileWithContent(String content) throws IOException {
         File tempFile = Files.createTempFile("temp", ".json").toFile();
         try (FileWriter writer = new FileWriter(tempFile)) {
@@ -212,11 +274,17 @@ public class PackageDependencyReaderTest {
     }
     
     
-    private File readFileFromFileSystem(String filePath) throws IOException {
-        InputStream inputStream = getClass().getClassLoader().getResourceAsStream(filePath);
+	/**
+     * Reads a file from src/resources through its filename
+     * 
+     * @param filename to search
+     * @return a file instance of the requested file
+     */
+    private File readFileFromFileSystem(String filename) throws IOException {
+        InputStream inputStream = getClass().getClassLoader().getResourceAsStream(filename);
         
         if (inputStream == null) {
-            throw new IOException("File not found in resources: " + filePath);
+            throw new IOException("File not found in resources: " + filename);
         }
 
         Path tempFilePath = Files.createTempFile("temp", ".json");
