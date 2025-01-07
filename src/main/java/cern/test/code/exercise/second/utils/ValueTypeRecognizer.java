@@ -1,6 +1,20 @@
 package cern.test.code.exercise.second.utils;
 
+/**
+ * Utility class that recognize the ValueType from the value inserted in the cell
+ * 
+ * @author Emanuele Venzano
+ * @version 1.0
+ * @since 2025-01-07
+ */
 public class ValueTypeRecognizer {
+
+	/**
+	 * Static method to return the type of a specified value.
+	 *
+	 * @param value the object to check
+	 * @return ValueType of the object
+	 */
 	public static ValueType fromValue(Object value) {
 	    if (value instanceof Integer) {
 	        return ValueType.INTEGER;
