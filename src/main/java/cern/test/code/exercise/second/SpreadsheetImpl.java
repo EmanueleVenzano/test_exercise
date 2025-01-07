@@ -14,7 +14,11 @@ public class SpreadsheetImpl {
 		}
 	}
 
-	public String get(int row, int column) {
+	public String get(int row, int column) throws IndexOutOfBoundsException {
+		if (row >= sheet.length)
+			throw new IndexOutOfBoundsException();
+		if (column >= sheet[0].length)
+			throw new IndexOutOfBoundsException();
 		return this.sheet[row][column];
 	}
 
