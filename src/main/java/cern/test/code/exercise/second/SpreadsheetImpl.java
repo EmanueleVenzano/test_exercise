@@ -3,35 +3,35 @@ package cern.test.code.exercise.second;
 import cern.test.code.exercise.second.utils.ValueType;
 
 public class SpreadsheetImpl {
-	private final String[][] sheet;
+	private final Cell[][] sheet;
 	
 	public SpreadsheetImpl (int rows, int columns) {
-		this.sheet = new String[rows][columns];
+		this.sheet = new Cell[rows][columns];
 		for (int r = 0; r < rows; r++) {
 			for (int c = 0; c < columns; c++) {
-				this.sheet[r][c] = "";
+				this.sheet[r][c] = new Cell("");
 			}
 		}
 	}
 
-	public String get(int row, int column) throws IndexOutOfBoundsException {
+	public Object get(int row, int column) throws IndexOutOfBoundsException {
 		if (row >= sheet.length)
 			throw new IndexOutOfBoundsException();
 		if (column >= sheet[0].length)
 			throw new IndexOutOfBoundsException();
-		return this.sheet[row][column];
+		return this.sheet[row][column].getValue();
 	}
 
-	public void put(int row, int column, String value) throws IndexOutOfBoundsException {
+	public void put(int row, int column, Object value) throws IndexOutOfBoundsException {
 		if (row >= sheet.length)
 			throw new IndexOutOfBoundsException();
 		if (column >= sheet[0].length)
 			throw new IndexOutOfBoundsException();
-		this.sheet[row][column] = value;
+		this.sheet[row][column].setValue(value);;
 	}
 	
 	public ValueType getValueType(int row, int column) {
-		return null;
+		return this.sheet[row][column].getType();
 	}
 }
   
