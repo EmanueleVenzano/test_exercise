@@ -3,20 +3,27 @@ package cern.test.code.exercise.second;
 import cern.test.code.exercise.second.utils.ValueType;
 
 public class SpreadsheetImpl {
+	private final String[][] sheet;
+	
+	public SpreadsheetImpl (int rows, int columns) {
+		this.sheet = new String[rows][columns];
+		for (int r = 0; r < rows; r++) {
+			for (int c = 0; c < columns; c++) {
+				this.sheet[r][c] = "";
+			}
+		}
+	}
 
 	public String get(int row, int column) {
-		if (row == 0 && column == 0)
-			return "";
-		if (row == 3 && column == 4)
-			return "";
-		
-		return null;
+		return this.sheet[row][column];
 	}
 
 	public void put(int row, int column, String value) {
+		this.sheet[row][column] = value;
 	}
 	
 	public ValueType getValueType(int row, int column) {
 		return null;
 	}
 }
+  
