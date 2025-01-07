@@ -20,8 +20,12 @@ public class Cell {
 	}
 	
 	public void setValue(Object value) {
-		this.value = value;
 		this.type = ValueTypeRecognizer.fromValue(value);		
+		if (ValueType.INTEGER.equals(type) && value instanceof String valueString) {
+			this.value = valueString.trim();
+		}else {
+			this.value = value;			
+		}
 	}
 
 }

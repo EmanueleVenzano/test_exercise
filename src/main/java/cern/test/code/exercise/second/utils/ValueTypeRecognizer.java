@@ -25,11 +25,14 @@ public class ValueTypeRecognizer {
 	 * @return true if the string can be parsed as an integer, false otherwise
 	 */
 	private static boolean isParsableAsInteger(String value) {
+	    if (value == null) {
+	        return false; // Null cannot be parsed as an integer
+	    }
 	    try {
-	        Integer.parseInt(value);
+	        Integer.parseInt(value.trim()); // Trim the input string before parsing
 	        return true;
 	    } catch (NumberFormatException e) {
-	        return false;
+	        return false; // Parsing failed, not an integer
 	    }
 	}
 
