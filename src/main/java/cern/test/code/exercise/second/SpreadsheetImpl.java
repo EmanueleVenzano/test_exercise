@@ -23,6 +23,10 @@ public class SpreadsheetImpl {
 	}
 
 	public void put(int row, int column, String value) {
+		if (row >= sheet.length)
+			throw new IndexOutOfBoundsException();
+		if (column >= sheet[0].length)
+			throw new IndexOutOfBoundsException();
 		this.sheet[row][column] = value;
 	}
 	
